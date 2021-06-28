@@ -5,6 +5,7 @@ namespace Spatie\DataTransferObject\Casters;
 use ArrayAccess;
 use LogicException;
 use Spatie\DataTransferObject\Caster;
+use Traversable;
 
 class ArrayCaster implements Caster
 {
@@ -14,7 +15,7 @@ class ArrayCaster implements Caster
     ) {
     }
 
-    public function cast(mixed $value): array | ArrayAccess
+    public function cast(mixed $value): array|ArrayAccess
     {
         if ($this->type == 'array') {
             return $this->castArray($value);
@@ -37,12 +38,15 @@ class ArrayCaster implements Caster
 
     private function castArrayAccess(mixed $value): ArrayAccess
     {
+        if (! is_subclass_of($this->type, Traversable::class)) {
+            throw new LogicException("Caster [ArrayCaster] may only be used to cast ArrayAccess objects that are traversable.");
+        }
+
         $arrayAccess = new $this->type();
 
-        array_walk(
-            $value,
-            fn (array $data) => $arrayAccess[] = new $this->itemType(...$data)
-        );
+        foreach ($value as $key => $data) {
+            $arrayAccess[$key] = new $this->itemType(...(array) $data);
+        }
 
         return $arrayAccess;
     }

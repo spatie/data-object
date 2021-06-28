@@ -2,6 +2,11 @@
 
 All notable changes to `data-transfer-object` will be documented in this file
 
+## Unreleased
+
+- Fix for an empty value being created when casting `ArrayAccess` objects (#216)
+- Add logic exception when attempting to cast `ArrayAccess` objects that are not traversable (#216)
+
 ## 3.3.0 - 2021-06-01
 
 - Expose DTO and validation error array in ValidationException (#213)
